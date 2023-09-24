@@ -1,22 +1,25 @@
-document.getElementById('setPasswordButton').addEventListener('click', function() {
-    const enteredPassword = document.getElementById('passwordInput').value;
-    chrome.storage.local.set({ 'parentPassword': enteredPassword }, function() {
-        alert("Password set!");
-    });
+const toggleButton = document.getElementById('toggleButton');
+const passwordInput = document.getElementById('passwordInput');
+const statusText = document.getElementById('statusText');
+const PASSWORD = "123";  // Замените на ваш пароль
+
+chrome.storage.local.get(['extensionEnabled'], function (result) {
+    if (result.extensionEnabled) {
+        statusText.textContent = "Extension is ON";
+    } else {
+        statusText.textContent = "Extension is OFF";
+    }
 });
 
-document.getElementById('toggleFilterButton').addEventListener('click', function() {
-    const enteredPassword = document.getElementById('togglePasswordInput').value;
-    chrome.storage.local.get('parentPassword', function(data) {
-        if (enteredPassword === data.parentPassword) {
-            chrome.storage.local.get('filterEnabled', function(data) {
-                const newStatus = !data.filterEnabled;
-                chrome.storage.local.set({ 'filterEnabled': newStatus }, function() {
-                    alert(`Filter is now ${newStatus ? "enabled" : "disabled"}`);
-                });
+toggleButton.addEventListener('click', function () {
+    if (passwordInput.value === PASSWORD) {
+        chrome.storage.local.get(['extensionEnabled'], function (result) {
+            let newState = !result.extensionEnabled;
+            chrome.storage.local.set({ extensionEnabled: newState }, function () {
+                statusText.textContent = newState ? "Extension is ON" : "Extension is OFF";
             });
-        } else {
-            alert("Incorrect password!");
-        }
-    });
+        });
+    } else {
+        alert("Incorrect password!");
+    }
 });
